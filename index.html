@@ -1,61 +1,431 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- displays site properly based on user's device -->
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/png" sizes="32x32" href="./assets/images/favicon-32x32.png">
-  
   <title>Frontend Mentor | Mortgage repayment calculator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700&display=swap" rel="stylesheet">
 
-  <!-- Feel free to remove these styles or customise in your own stylesheet 👍 -->
   <style>
-    .attribution { font-size: 11px; text-align: center; }
-    .attribution a { color: hsl(228, 45%, 44%); }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --lime: hsl(61, 70%, 52%);
+      --red: hsl(4, 69%, 50%);
+      --white: hsl(0, 0%, 100%);
+      --slate-100: hsl(202, 86%, 94%);
+      --slate-300: hsl(203, 41%, 72%);
+      --slate-500: hsl(200, 26%, 54%);
+      --slate-700: hsl(200, 24%, 40%);
+      --slate-900: hsl(202, 55%, 16%);
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 16px;
+      background-color: var(--slate-100);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: var(--white);
+      border-radius: 24px;
+      overflow: hidden;
+      max-width: 1008px;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      box-shadow: 0 32px 64px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-section {
+      padding: 40px;
+    }
+
+    .form-header {
+      margin-bottom: 40px;
+    }
+
+    .form-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--slate-900);
+      margin-bottom: 8px;
+    }
+
+    .clear-btn {
+      background: none;
+      border: none;
+      color: var(--slate-700);
+      text-decoration: underline;
+      cursor: pointer;
+      font-size: 16px;
+      font-family: inherit;
+      transition: color 0.3s ease;
+    }
+
+    .clear-btn:hover {
+      color: var(--slate-900);
+    }
+
+    .form-group {
+      margin-bottom: 24px;
+    }
+
+    .form-label {
+      display: block;
+      color: var(--slate-700);
+      margin-bottom: 12px;
+      font-weight: 500;
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      border: 1px solid var(--slate-300);
+      border-radius: 8px;
+      overflow: hidden;
+      transition: border-color 0.3s ease;
+    }
+
+    .input-wrapper:hover {
+      border-color: var(--slate-700);
+    }
+
+    .input-wrapper.focused {
+      border-color: var(--lime);
+    }
+
+    .input-wrapper.error {
+      border-color: var(--red);
+    }
+
+    .input-prefix,
+    .input-suffix {
+      background: var(--slate-100);
+      padding: 12px 16px;
+      color: var(--slate-700);
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+    }
+
+    .form-input {
+      flex: 1;
+      border: none;
+      padding: 12px 16px;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--slate-900);
+      font-family: inherit;
+      outline: none;
+    }
+
+    .form-input::placeholder {
+      color: var(--slate-500);
+    }
+
+    .error-message {
+      color: var(--red);
+      font-size: 14px;
+      margin-top: 8px;
+      display: none;
+    }
+
+    .radio-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .radio-option {
+      position: relative;
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+      border: 1px solid var(--slate-300);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .radio-option:hover {
+      border-color: var(--lime);
+    }
+
+    .radio-option.selected {
+      border-color: var(--lime);
+      background-color: hsl(61, 70%, 52%, 0.1);
+    }
+
+    .radio-input {
+      margin-right: 16px;
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--slate-300);
+      border-radius: 50%;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .radio-input::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--lime);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .radio-option.selected .radio-input {
+      border-color: var(--lime);
+    }
+
+    .radio-option.selected .radio-input::before {
+      opacity: 1;
+    }
+
+    .radio-label {
+      font-weight: 700;
+      color: var(--slate-900);
+      cursor: pointer;
+    }
+
+    .calculate-btn {
+      width: 100%;
+      background: var(--lime);
+      border: none;
+      padding: 16px;
+      border-radius: 32px;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--slate-900);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      transition: background-color 0.3s ease;
+      margin-top: 40px;
+    }
+
+    .calculate-btn:hover {
+      background: hsl(61, 70%, 45%);
+    }
+
+    .calculate-icon {
+      width: 24px;
+      height: 24px;
+    }
+
+    .results-section {
+      background: var(--slate-900);
+      padding: 40px;
+      color: var(--white);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .empty-results {
+      text-align: center;
+    }
+
+    .empty-illustration {
+      width: 192px;
+      height: 192px;
+      margin-bottom: 16px;
+    }
+
+    .empty-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 16px;
+    }
+
+    .empty-description {
+      color: var(--slate-300);
+      line-height: 1.5;
+    }
+
+    .completed-results {
+      display: none;
+      width: 100%;
+    }
+
+    .results-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .results-description {
+      color: var(--slate-300);
+      margin-bottom: 40px;
+      line-height: 1.5;
+    }
+
+    .results-card {
+      background: hsl(202, 55%, 8%);
+      border-radius: 8px;
+      border-top: 4px solid var(--lime);
+      padding: 32px;
+    }
+
+    .monthly-payment {
+      margin-bottom: 32px;
+      padding-bottom: 32px;
+      border-bottom: 1px solid var(--slate-700);
+    }
+
+    .payment-label {
+      color: var(--slate-300);
+      margin-bottom: 8px;
+    }
+
+    .payment-amount {
+      font-size: 56px;
+      font-weight: 700;
+      color: var(--lime);
+      line-height: 1;
+    }
+
+    .total-payment .payment-amount {
+      font-size: 24px;
+      color: var(--white);
+    }
+
+    .attribution {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 11px;
+      text-align: center;
+      color: var(--slate-700);
+    }
+
+    .attribution a {
+      color: hsl(228, 45%, 44%);
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        grid-template-columns: 1fr;
+        border-radius: 0;
+        max-width: none;
+        min-height: 100vh;
+      }
+
+      .form-section,
+      .results-section {
+        padding: 32px 24px;
+      }
+
+      .form-title {
+        font-size: 20px;
+      }
+
+      .payment-amount {
+        font-size: 40px;
+      }
+
+      .radio-group {
+        gap: 8px;
+      }
+    }
   </style>
 </head>
+
 <body>
+  <div class="container">
+    <div class="form-section">
+      <div class="form-header">
+        <h1 class="form-title">Mortgage Calculator</h1>
+        <button type="button" class="clear-btn" id="clearBtn">Clear All</button>
+      </div>
 
-  Mortgage Calculator
-  Clear All
+      <form id="mortgageForm">
+        <div class="form-group">
+          <label for="amount" class="form-label">Mortgage Amount</label>
+          <div class="input-wrapper" data-input="amount">
+            <div class="input-prefix">£</div>
+            <input type="text" id="amount" class="form-input" placeholder="300,000">
+          </div>
+          <div class="error-message" id="amountError">This field is required</div>
+        </div>
 
-  Mortgage Amount
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+          <div class="form-group">
+            <label for="term" class="form-label">Mortgage Term</label>
+            <div class="input-wrapper" data-input="term">
+              <input type="text" id="term" class="form-input" placeholder="25">
+              <div class="input-suffix">years</div>
+            </div>
+            <div class="error-message" id="termError">This field is required</div>
+          </div>
 
-  Mortgage Term
+          <div class="form-group">
+            <label for="rate" class="form-label">Interest Rate</label>
+            <div class="input-wrapper" data-input="rate">
+              <input type="text" id="rate" class="form-input" placeholder="5.25">
+              <div class="input-suffix">%</div>
+            </div>
+            <div class="error-message" id="rateError">This field is required</div>
+          </div>
+        </div>
 
-  Interest Rate
+        <div class="form-group">
+          <label class="form-label">Mortgage Type</label>
+          <div class="radio-group">
+            <div class="radio-option" data-type="repayment">
+              <div class="radio-input"></div>
+              <label class="radio-label">Repayment</label>
+            </div>
+            <div class="radio-option" data-type="interest">
+              <div class="radio-input"></div>
+              <label class="radio-label">Interest Only</label>
+            </div>
+          </div>
+          <div class="error-message" id="typeError">This field is required</div>
+        </div>
 
-  Mortgage Type
-  Repayment
-  Interest Only
+        <button type="submit" class="calculate-btn">
+          <svg class="calculate-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+            viewBox="0 0 24 24">
+            <path fill="currentColor"
+              d="M18.75 2.25H5.25a1.5 1.5 0 0 0-1.5 1.5v16.5a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5V3.75a1.5 1.5 0 0 0-1.5-1.5Zm-10.5 16.5a1.125 1.125 0 1 1 0-2.25 1.125 1.125 0 0 1 0 2.25Zm0-3.75a1.125 1.125 0 1 1 0-2.25 1.125 1.125 0 0 1 0 2.25ZM12 18.75a1.125 1.125 0 1 1 0-2.25 1.125 1.125 0 0 1 0 2.25ZM12 15a1.125 1.125 0 1 1 0-2.25A1.125 1.125 0 0 1 12 15Zm3.75 3.75a1.125 1.125 0 1 1 0-2.25 1.125 1.125 0 0 1 0 2.25Zm0-3.75a1.125 1.125 0 1 1 0-2.25 1.125 1.125 0 0 1 0 2.25Zm1.5-5.25a.75.75 0 0 1-.75.75h-9a.75.75 0 0 1-.75-.75V6a.75.75 0 0 1 .75-.75h9a.75.75 0 0 1 .75.75v3.75Z" />
+          </svg>
+          Calculate Repayments
+        </button>
+      </form>
+    </div>
 
-  Calculate Repayments
-
-  <!-- Empty results start -->
-
-  Results shown here
-
-  Complete the form and click “calculate repayments” to see what 
-  your monthly repayments would be.
-
-  <!-- Empty results end -->
-
-  <!-- Completed results start -->
-
-  Your results
-
-  Your results are shown below based on the information you provided. 
-  To adjust the results, edit the form and click “calculate repayments” again.
-
-  Your monthly repayments
-
-  Total you'll repay over the term
-
-  <!-- Completed results end -->
-  
-  <div class="attribution">
-    Challenge by <a href="https://www.frontendmentor.io?ref=challenge">Frontend Mentor</a>. 
-    Coded by <a href="#">Your Name Here</a>.
-  </div>
-</body>
-</html>
+    <div class="results-section">
+      <img src="./assets/images/illustration-empty.svg" alt="Empty results illustration" class="empty-illustration">
+      <div class="empty-results" id="emptyResults">
+        <h2 class="empty-title">Results shown here</h2>
+        <p class="empty-description">
+          Complete the form and click "calculate repayments" to see what
+          your monthly repayments would be.
+        </p>
+      </div>
